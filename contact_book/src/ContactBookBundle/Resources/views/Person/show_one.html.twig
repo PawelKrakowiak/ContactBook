@@ -1,0 +1,8 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}ContactBookBundle:Person:showOne{% endblock %}
+
+{% block body %}
+    <h3> {{person.name}} {{person.lastName}} {{person.description}} </h3>
+    <a href ="/{{person.id}}/modify">Edytuj</a> <a href="/{{person.id}}/delete">Usuń</a>
+{% endblock %}
