@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="person")
  * @ORM\Entity(repositoryClass="ContactBookBundle\Repository\PersonRepository")
  */
-class Person
-{
+class Person {
+
     /**
      * @var int
      *
@@ -42,14 +42,30 @@ class Person
      */
     private $description;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Address")
+     * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
+     */
+    private $address;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Phone")
+     * @ORM\JoinColumn(name="phone_id", referencedColumnName="id")
+     */
+    private $phone;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Email")
+     * @ORM\JoinColumn(name="email_id", referencedColumnName="id")
+     */
+    private $email;
 
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -59,8 +75,7 @@ class Person
      * @param string $name
      * @return Person
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -71,8 +86,7 @@ class Person
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -82,8 +96,7 @@ class Person
      * @param string $lastName
      * @return Person
      */
-    public function setLastName($lastName)
-    {
+    public function setLastName($lastName) {
         $this->lastName = $lastName;
 
         return $this;
@@ -94,8 +107,7 @@ class Person
      *
      * @return string 
      */
-    public function getLastName()
-    {
+    public function getLastName() {
         return $this->lastName;
     }
 
@@ -105,8 +117,7 @@ class Person
      * @param string $description
      * @return Person
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -117,8 +128,75 @@ class Person
      *
      * @return string 
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * Set address
+     *
+     * @param \ContactBookBundle\Entity\Address $address
+     * @return Person
+     */
+    public function setAddress(\ContactBookBundle\Entity\Address $address = null) {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return \ContactBookBundle\Entity\Address 
+     */
+    public function getAddress() {
+        return $this->address;
+    }
+
+
+    /**
+     * Set phone
+     *
+     * @param \ContactBookBundle\Entity\Phone $phone
+     * @return Person
+     */
+    public function setPhone(\ContactBookBundle\Entity\Phone $phone = null)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return \ContactBookBundle\Entity\Phone 
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Set email
+     *
+     * @param \ContactBookBundle\Entity\Email $email
+     * @return Person
+     */
+    public function setEmail(\ContactBookBundle\Entity\Email $email = null)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return \ContactBookBundle\Entity\Email 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

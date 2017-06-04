@@ -5,20 +5,39 @@ namespace ContactBookBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ContactBookBundle\Entity\Person;
+use ContactBookBundle\Entity\Address;
+use ContactBookBundle\Entity\Phone;
+use ContactBookBundle\Entity\Email;
+use ContactBookBundle\Entity\Type;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class PersonController extends Controller {
-
-    public function formCreate($inputArray, $person = null) {
-        if($person == null){
-            $person = new Person();
+    
+    public function createFormEntity($entity, $id=null){
+        if ($id == null) {
+            $entity =  "ContactBookBundle\Entity\\$entity";
+            $formEntity = new $entity;
+        } else {
+            $repository = $this->getDoctrine()->getRepository('ContactBookBundle:'.$entity);
+            $formEntity = $repository->find($id);
         }
-        $form = $this->createFormBuilder($person);
+        return $formEntity;
+    }
+
+    public function formCreate($inputArray, $entity, $id = null, $action = "", $entityOptions=null) {
+
+        $entity = $this->createFormEntity($entity, $id);
+        $form = $this->createFormBuilder($entity);
+        $form->setAction($action);
 
         foreach ($inputArray as $key => $value) {
-            $form->add($key, $value);
+            if($value == 'entity'){
+                $form->add($key, $value, $entityOptions);
+            }else{
+                $form->add($key, $value);      
+            }
         }
         return $form->getForm();
     }
@@ -30,7 +49,7 @@ class PersonController extends Controller {
     public function showNewFormAction() {
 
         return $this->render('ContactBookBundle:Person:show_new_form.html.twig', array(
-            'form' => $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Add' => 'submit'])->createView()
+                    'form' => $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Add' => 'submit'], 'Person')->createView()
         ));
     }
 
@@ -40,7 +59,7 @@ class PersonController extends Controller {
      */
     public function createNewAction(Request $request) {
 
-        $form = $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Add' => 'submit']);
+        $form = $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Add' => 'submit'], 'Person');
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             $person = $form->getData();
@@ -57,10 +76,32 @@ class PersonController extends Controller {
      * @Route("/{id}/modify")
      * @Method("GET")
      */
-    public function showEditFormAction() {
-        
+    public function showEditFormAction($id) {
+
+        $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
+        $person = $repository->find($id);
         return $this->render('ContactBookBundle:Person:show_edit_form.html.twig', array(
-            'form' => $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Edit' => 'submit'])->createView()
+                    'form' => $this->formCreate(['name' => 'text', 
+                                                 'last_name' => 'text', 
+                                                 'description' => 'text', 
+                                                 'Edit' => 'submit'], 'Person', $id)->createView(),
+                    'form2' =>$this->formCreate(['city' => 'text', 
+                                                 'street' => 'text', 
+                                                 'street_number' => 'integer', 
+                                                 'apartment_number' => 'integer', 
+                                                 'Edit' => 'submit'], 'Address', null, "/".$person->getId()."/addAddress")->createView(),
+                    'form3' =>$this->formCreate(['number' => 'integer',
+                                                 'type' => 'entity'], 
+                                                'Phone', null, "/".$person->getId()."addPhone", 
+                                                array('class'=>'ContactBookBundle:Type',
+                                                      'choice_label' => 'type'))
+                                                ->createView(),
+                    'form4' =>$this->formCreate(['email' => 'text',
+                                                 'type' => 'entity'], 
+                                                'Email', null, "/".$person->getId()."addEmail", 
+                                                array('class'=>'ContactBookBundle:Type',
+                                                      'choice_label' => 'type'))
+                                                ->createView(),
         ));
     }
 
@@ -68,17 +109,43 @@ class PersonController extends Controller {
      * @Route("/{id}/modify")
      * @Method("POST")
      */
-    public function editAction(Request $request, $id) {
+    public function editInfoAction(Request $request, $id) {
         $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
         $person = $repository->find($id);
-        $form = $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Edit' => 'submit'], $person);
+        $form = $this->formCreate(['name' => 'text', 'last_name' => 'text', 'description' => 'text', 'Edit' => 'submit'], 'Person', $id);
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             $person = $form->getData();
             $em = $this->getDoctrine()->getManager();
             $em->persist($person);
             $em->flush();
-            
+
+            return $this->render('ContactBookBundle:Person:edit.html.twig');
+        }
+        throw new Exception('Nie udało się edytować kontaktu');
+    }
+        /**
+     * @Route("/{id}/addAddress")
+     * @Method("POST")
+     */
+    public function editAddressAction(Request $request, $id) {
+        $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
+        $person = $repository->find($id);
+        $form = $this->formCreate(['city' => 'text', 
+                                   'street' => 'text', 
+                                   'street_number' => 'integer', 
+                                   'apartment_number' => 'integer', 
+                                   'Edit' => 'submit'], 'Address', null, "/".$person->getId()."/addAddress");
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted()) {
+            $address = $form->getData();
+            $person->setAddress($address);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($address);
+            $em->flush();
+
             return $this->render('ContactBookBundle:Person:edit.html.twig');
         }
         throw new Exception('Nie udało się edytować kontaktu');
@@ -90,16 +157,15 @@ class PersonController extends Controller {
     public function deleteAction($id) {
         $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
         $person = $repository->find($id);
-        if($person){
+        if ($person) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($person);
             $em->flush();
 
             return $this->render('ContactBookBundle:Person:delete.html.twig');
-        }else{
+        } else {
             throw new Exception('Nie udało się usunąć użytkownika');
         }
-
     }
 
     /**
@@ -109,7 +175,7 @@ class PersonController extends Controller {
         $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
         $person = $repository->find($id);
         return $this->render('ContactBookBundle:Person:show_one.html.twig', array(
-                        'person' => $person
+                    'person' => $person
         ));
     }
 
@@ -120,7 +186,7 @@ class PersonController extends Controller {
         $repository = $this->getDoctrine()->getRepository('ContactBookBundle:Person');
         $contacts = $repository->findAll();
         return $this->render('ContactBookBundle:Person:show_all.html.twig', array(
-                        'contacts' => $contacts
+                    'contacts' => $contacts
         ));
     }
 

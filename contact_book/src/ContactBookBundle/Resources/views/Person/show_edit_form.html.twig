@@ -3,7 +3,23 @@
 {% block title %}ContactBookBundle:Person:showEditForm{% endblock %}
 
 {% block body %}
+    <legend>Edit informations</legend>
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
+
+    <legend>Edit address</legend>
+    {{form_start(form2)}}
+    {{form_widget(form2)}}
+    {{form_end(form2)}}
+
+    <legend>Edit phone number</legend>
+    {{form_start(form3)}}
+    {{form_widget(form3)}}
+    {{form_end(form3)}}
+
+    <legend>Edit email address</legend>
+    {{form_start(form4)}}
+    {{form_widget(form4)}}
+    {{form_end(form4)}}
 {% endblock %}
