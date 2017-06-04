@@ -3,6 +3,58 @@
 {% block title %}ContactBookBundle:Person:showOne{% endblock %}
 
 {% block body %}
-    <h3> {{person.name}} {{person.lastName}} {{person.description}} </h3>
-    <a href ="/{{person.id}}/modify">Edytuj</a> <a href="/{{person.id}}/delete">Usuń</a>
+
+    <div class="container">
+        <div class="row" style='padding-top: 100px; font-size: 24px;'>
+            <div class="col-md-3">
+            </div>
+            <div class='col-md-6' style='background-color: lightgray'>
+                <p style='font-size: 36px; text-align:center;'>
+                    {%if person.name is not null%}
+                        <span>{{person.name}}</span>
+                    {%endif%}
+                    {%if person.lastName is not null%}
+                        <span>{{person.lastName}}</span>
+                    {%endif%}
+                </p>
+                <small>    
+                    {%if address is not null%}
+                        <p style='padding-bottom: 10px; text-align:center;'>
+                            {{address.street}} &nbsp 
+                            {{address.streetNumber}}/
+                            {%if address.apartmentNumber is not null%}
+                                {{address.apartmentNumber}}&nbsp
+                            {%endif%}
+                            {{address.city}}
+                        </p>
+                    {%endif%}
+                </small>
+                {%if email is not null%}
+                    <p>
+                        <i class="glyphicon glyphicon-envelope"></i>
+                        {{email.email}} ({{email.type.type}})
+                    </p>
+                {%endif%}
+                <br />
+                {%if phone is not null%}
+                    <p>
+                        <i class="glyphicon glyphicon-earphone"></i>
+                        {{phone.number}} ({{phone.type.type}})
+                    </p>
+                {%endif%}
+                <br />
+                {%if person.description is not null%}
+                    <p>
+                        <i class="glyphicon glyphicon-text-size"></i>
+                        {{person.description}}
+                    </p>
+                {%endif%}
+                <a href ="/{{person.id}}/modify" class="btn btn-primary">Edytuj</a> <a href="/{{person.id}}/delete" class="btn btn-danger">Usuń</a>
+            </div>
+            <div class='col-md-3'>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %}

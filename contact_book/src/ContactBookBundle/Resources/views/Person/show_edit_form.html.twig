@@ -3,23 +3,33 @@
 {% block title %}ContactBookBundle:Person:showEditForm{% endblock %}
 
 {% block body %}
-    <legend>Edit informations</legend>
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <div class='container-fluid'>
+        <div class='form-group'>
+            <div class='col-md-4'>
+            </div>
+            <div class='col-md-4' style='padding-top: 50px;'>
+                <legend>Edit informations</legend>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal' }}) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
 
-    <legend>Edit address</legend>
-    {{form_start(form2)}}
-    {{form_widget(form2)}}
-    {{form_end(form2)}}
+                <legend>Edit address</legend>
+                {{form_start(form2, {'attr': {'class': 'form-horizontal' }})}}
+                {{form_widget(form2)}}
+                {{form_end(form2)}}
 
-    <legend>Edit phone number</legend>
-    {{form_start(form3)}}
-    {{form_widget(form3)}}
-    {{form_end(form3)}}
+                <legend>Edit phone number</legend>
+                {{form_start(form3, {'attr': {'class': 'form-horizontal' }})}}
+                {{form_widget(form3)}}
+                {{form_end(form3)}}
 
-    <legend>Edit email address</legend>
-    {{form_start(form4)}}
-    {{form_widget(form4)}}
-    {{form_end(form4)}}
+                <legend>Edit email address</legend>
+                {{form_start(form4, {'attr': {'class': 'form-horizontal' }})}}
+                {{form_widget(form4)}}
+                {{form_end(form4)}}
+            </div>
+            <div class='col-md-4'>
+            </div>
+        </div>
+    </div>
 {% endblock %}
